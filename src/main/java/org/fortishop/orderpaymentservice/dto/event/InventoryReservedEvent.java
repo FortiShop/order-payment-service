@@ -1,9 +1,17 @@
 package org.fortishop.orderpaymentservice.dto.event;
 
-public record InventoryReservedEvent(
-        Long orderId,
-        boolean reserved,
-        String timestamp,
-        String traceId
-) {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class InventoryReservedEvent {
+    private Long orderId;
+    private boolean reserved;
+    private String timestamp;
+    private String traceId;
 }

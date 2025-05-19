@@ -51,4 +51,3 @@ public class Payment {
         this.paymentStatus = status;
     }
 }
-

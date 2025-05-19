@@ -1,9 +1,9 @@
 package org.fortishop.orderpaymentservice.respository;
 
-import java.util.Optional;
+import java.util.List;
 import org.fortishop.orderpaymentservice.domain.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    Optional<Order> findByMemberId(Long memberId);
+    List<Order> findByMemberId(Long memberId);
 }

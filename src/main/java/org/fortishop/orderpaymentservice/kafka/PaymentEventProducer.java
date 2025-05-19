@@ -15,20 +15,19 @@ public class PaymentEventProducer {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void sendPaymentCompleted(PaymentCompletedEvent event) {
-        kafkaTemplate.send("payment.completed", event.orderId().toString(), event);
+        kafkaTemplate.send("payment.completed", event.getOrderId().toString(), event);
     }
 
     public void sendPaymentFailed(PaymentFailedEvent event) {
-        kafkaTemplate.send("payment.failed", event.orderId().toString(), event);
+        kafkaTemplate.send("payment.failed", event.getOrderId().toString(), event);
     }
 
     public void sendPointChanged(PointChangedEvent event) {
-        kafkaTemplate.send("point.changed", event.memberId().toString(), event);
+        kafkaTemplate.send("point.changed", event.getMemberId().toString(), event);
     }
 
     public void sendDeliveryStarted(DeliveryStartedEvent event) {
-        kafkaTemplate.send("delivery.started", event.orderId().toString(), event);
+        kafkaTemplate.send("delivery.started", event.getOrderId().toString(), event);
     }
 
 }
-

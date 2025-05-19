@@ -19,4 +19,3 @@ public interface PaymentService {
     @Transactional
     void retryPayment(Long paymentId);
 }
-

@@ -13,7 +13,6 @@ public class OrderEventProducer {
     private static final String TOPIC = "order.created";
 
     public void send(OrderCreatedEvent event) {
-        kafkaTemplate.send(TOPIC, event.orderId().toString(), event);
+        kafkaTemplate.send(TOPIC, event.getOrderId().toString(), event);
     }
 }
-

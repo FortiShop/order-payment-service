@@ -20,4 +20,3 @@ public class KafkaProperties {
         private String autoOffsetReset;
     }
 }
-
