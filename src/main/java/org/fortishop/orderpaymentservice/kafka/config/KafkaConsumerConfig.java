@@ -1,4 +1,4 @@
-package org.fortishop.orderpaymentservice.global.config;
+package org.fortishop.orderpaymentservice.kafka.config;
 
 import java.util.HashMap;
 import java.util.Map;

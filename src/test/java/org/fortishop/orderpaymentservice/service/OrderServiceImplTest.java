@@ -42,11 +42,12 @@ class OrderServiceImplTest {
     void createOrder_success() {
         OrderRequest request = new OrderRequest(1L,
                 List.of(new OrderItemRequest(10L, 2, BigDecimal.valueOf(1000))),
-                BigDecimal.valueOf(2000));
+                BigDecimal.valueOf(2000), "서울특별시");
         Order saved = Order.builder()
                 .id(100L)
                 .memberId(1L)
                 .totalPrice(request.totalPrice())
+                .address(request.address())
                 .status(OrderStatus.ORDERED)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -65,6 +66,7 @@ class OrderServiceImplTest {
         Order order = Order.builder()
                 .id(1L)
                 .memberId(1L)
+                .address("서울특별시")
                 .status(OrderStatus.ORDERED)
                 .createdAt(LocalDateTime.now())
                 .build();

@@ -34,6 +34,8 @@ public class Order {
 
     private Long memberId;
 
+    private String address;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
@@ -42,7 +44,7 @@ public class Order {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-    
+
     @Builder.Default
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();

@@ -199,7 +199,7 @@ public class OrderPaymentServiceIntegrationTest {
         OrderRequest request = new OrderRequest(
                 1L,
                 List.of(new OrderItemRequest(10L, 2, BigDecimal.valueOf(10000))),
-                BigDecimal.valueOf(20000)
+                BigDecimal.valueOf(20000), "서울특별시"
         );
 
         HttpHeaders headers = new HttpHeaders();
@@ -256,7 +256,7 @@ public class OrderPaymentServiceIntegrationTest {
         OrderRequest request = new OrderRequest(
                 3L,
                 List.of(new OrderItemRequest(10L, 1, BigDecimal.valueOf(5000))),
-                BigDecimal.valueOf(5000)
+                BigDecimal.valueOf(5000), "서울특별시"
         );
 
         HttpEntity<OrderRequest> entity = new HttpEntity<>(request);
@@ -288,7 +288,8 @@ public class OrderPaymentServiceIntegrationTest {
         List<OrderItemRequest> items = List.of(
                 new OrderItemRequest(10L, 2, price)
         );
-        OrderRequest request = new OrderRequest(memberId, items, price.multiply(BigDecimal.valueOf(2)));
+        String address = "서울특별시";
+        OrderRequest request = new OrderRequest(memberId, items, price.multiply(BigDecimal.valueOf(2)), address);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -337,7 +338,7 @@ public class OrderPaymentServiceIntegrationTest {
         OrderRequest request = new OrderRequest(
                 1L,
                 List.of(new OrderItemRequest(10L, 1, BigDecimal.valueOf(5000))),
-                BigDecimal.valueOf(5000)
+                BigDecimal.valueOf(5000), "서울특별시"
         );
 
         HttpHeaders headers = new HttpHeaders();
@@ -387,7 +388,7 @@ public class OrderPaymentServiceIntegrationTest {
         OrderRequest request = new OrderRequest(
                 1L,
                 List.of(new OrderItemRequest(10L, 1, BigDecimal.valueOf(5000))),
-                BigDecimal.valueOf(5000)
+                BigDecimal.valueOf(5000), "서울특별시"
         );
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -440,7 +441,7 @@ public class OrderPaymentServiceIntegrationTest {
         OrderRequest orderRequest = new OrderRequest(
                 1L,
                 List.of(new OrderItemRequest(100L, 1, BigDecimal.valueOf(5000))),
-                BigDecimal.valueOf(5000)
+                BigDecimal.valueOf(5000), "서울특별시"
         );
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -580,7 +581,7 @@ public class OrderPaymentServiceIntegrationTest {
         OrderRequest orderRequest = new OrderRequest(
                 1L,
                 List.of(new OrderItemRequest(100L, 1, BigDecimal.valueOf(5000))),
-                BigDecimal.valueOf(5000)
+                BigDecimal.valueOf(5000), "서울특별시"
         );
         HttpEntity<OrderRequest> orderEntity = new HttpEntity<>(orderRequest);
         ResponseEntity<Long> res = restTemplate.exchange(

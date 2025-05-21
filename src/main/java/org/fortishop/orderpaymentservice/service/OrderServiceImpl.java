@@ -33,6 +33,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = Order.builder()
                 .memberId(request.memberId())
                 .totalPrice(request.totalPrice())
+                .address(request.address())
                 .status(OrderStatus.ORDERED)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())

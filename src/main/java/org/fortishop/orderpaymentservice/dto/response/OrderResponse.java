@@ -18,6 +18,7 @@ public class OrderResponse {
     private Long memberId;
     private String status;
     private BigDecimal totalPrice;
+    private String address;
     private LocalDateTime createdAt;
     private List<OrderItemResponse> items;
 
@@ -27,6 +28,7 @@ public class OrderResponse {
                 order.getMemberId(),
                 order.getStatus().name(),
                 order.getTotalPrice(),
+                order.getAddress(),
                 order.getCreatedAt(),
                 order.getOrderItems().stream()
                         .map(OrderItemResponse::of)

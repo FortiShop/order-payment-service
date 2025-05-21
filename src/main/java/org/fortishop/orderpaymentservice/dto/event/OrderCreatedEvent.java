@@ -15,6 +15,7 @@ public class OrderCreatedEvent {
     private Long orderId;
     private Long memberId;
     private BigDecimal totalPrice;
+    private String address;
     private List<OrderItemInfo> items;
     private String createdAt;
     private String traceId;
@@ -24,6 +25,7 @@ public class OrderCreatedEvent {
                 .orderId(order.getId())
                 .memberId(order.getMemberId())
                 .totalPrice(order.getTotalPrice())
+                .address(order.getAddress())
                 .createdAt(order.getCreatedAt().toString())
                 .traceId(traceId)
                 .items(order.getOrderItems().stream()

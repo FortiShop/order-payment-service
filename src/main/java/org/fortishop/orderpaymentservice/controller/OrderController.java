@@ -1,18 +1,21 @@
 package org.fortishop.orderpaymentservice.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.fortishop.orderpaymentservice.domain.OrderStatus;
 import org.fortishop.orderpaymentservice.dto.request.OrderRequest;
 import org.fortishop.orderpaymentservice.dto.response.OrderResponse;
 import org.fortishop.orderpaymentservice.dto.response.OrderSummaryResponse;
+import org.fortishop.orderpaymentservice.exception.OrderException;
+import org.fortishop.orderpaymentservice.exception.OrderExceptionType;
 import org.fortishop.orderpaymentservice.global.Responder;
 import org.fortishop.orderpaymentservice.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,6 +27,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
 
     private final OrderService orderService;
+
+    private static final String ADMIN_ROLE = "ROLE_ADMIN";
+
+    private void validateAdmin(HttpServletRequest request) {
+        String role = request.getHeader("x-member-role");
+        if (!ADMIN_ROLE.equals(role)) {
+            throw new OrderException(OrderExceptionType.UNAUTHORIZED_USER);
+        }
+    }
 
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody OrderRequest request) {
@@ -51,9 +63,11 @@ public class OrderController {
         return Responder.success("주문이 취소되었습니다.");
     }
 
-    @PutMapping("/{orderId}/status")
+    @PatchMapping("/{orderId}/status")
     public ResponseEntity<?> changeStatus(@PathVariable(name = "orderId") Long orderId,
-                                          @RequestParam(name = "status") OrderStatus status) {
+                                          @RequestParam(name = "status") OrderStatus status,
+                                          HttpServletRequest request) {
+        validateAdmin(request);
         orderService.changeStatus(orderId, status);
         return Responder.success("상태가 변경되었습니다.");
     }

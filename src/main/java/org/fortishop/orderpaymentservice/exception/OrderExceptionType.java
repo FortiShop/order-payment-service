@@ -4,7 +4,8 @@ import org.fortishop.orderpaymentservice.global.exception.BaseExceptionType;
 import org.springframework.http.HttpStatus;
 
 public enum OrderExceptionType implements BaseExceptionType {
-    ORDER_NOT_FOUND("O001", "일치하는 주문이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+    ORDER_NOT_FOUND("O001", "일치하는 주문이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+    UNAUTHORIZED_USER("O002", "잘못된 권한의 요청입니다.", HttpStatus.UNAUTHORIZED);
 
     private final String errorCode;
     private final String errorMessage;
