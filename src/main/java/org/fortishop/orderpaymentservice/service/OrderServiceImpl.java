@@ -30,6 +30,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Long createOrder(OrderRequest request) {
+        String traceId = UUID.randomUUID().toString();
         Order order = Order.builder()
                 .memberId(request.memberId())
                 .totalPrice(request.totalPrice())
@@ -37,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
                 .status(OrderStatus.ORDERED)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .traceId(traceId)
                 .build();
 
         for (OrderItemRequest item : request.items()) {
@@ -50,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        OrderCreatedEvent event = OrderCreatedEvent.of(savedOrder, UUID.randomUUID().toString());
+        OrderCreatedEvent event = OrderCreatedEvent.of(savedOrder, traceId);
         orderEventProducer.send(event);
 
         return savedOrder.getId();

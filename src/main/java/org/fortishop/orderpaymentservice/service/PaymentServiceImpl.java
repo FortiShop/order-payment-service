@@ -47,10 +47,9 @@ public class PaymentServiceImpl implements PaymentService {
             throw new IllegalStateException("이미 결제 요청이 처리된 주문입니다.");
         }
 
-        String traceId = UUID.randomUUID().toString();
+        String traceId = order.getTraceId();
 
         try {
-            // 결제 성공 처리
             Payment payment = paymentRepository.save(
                     Payment.builder()
                             .orderId(order.getId())
@@ -62,7 +61,6 @@ public class PaymentServiceImpl implements PaymentService {
 
             order.updateStatus(OrderStatus.PAID);
 
-            // Kafka 이벤트 발행
             paymentEventProducer.sendPaymentCompleted(PaymentCompletedEvent.of(payment, traceId));
 
             paymentEventProducer.sendPointChanged(PointChangedEvent.builder()
@@ -79,7 +77,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .orderId(order.getId())
                     .deliveryId(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE)
                     .trackingNumber(UUID.randomUUID().toString().substring(0, 12))
-                    .company("CJ대한통운")
+                    .company("임시")
                     .startedAt(LocalDateTime.now().toString())
                     .traceId(traceId)
                     .build());
@@ -122,7 +120,6 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment.getPaymentStatus() == PaymentStatus.FAILED) {
             throw new IllegalStateException("이미 실패한 결제입니다.");
         }
-
         payment.updateStatus(PaymentStatus.FAILED);
     }
 
@@ -135,7 +132,6 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment.getPaymentStatus() == PaymentStatus.SUCCESS) {
             throw new IllegalStateException("이미 성공한 결제입니다.");
         }
-
         payment.updateStatus(PaymentStatus.SUCCESS);
     }
 }

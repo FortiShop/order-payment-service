@@ -29,5 +29,4 @@ public class PaymentEventProducer {
     public void sendDeliveryStarted(DeliveryStartedEvent event) {
         kafkaTemplate.send("delivery.started", event.getOrderId().toString(), event);
     }
-
 }

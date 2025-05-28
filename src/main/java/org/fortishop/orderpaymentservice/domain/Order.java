@@ -45,6 +45,8 @@ public class Order {
 
     private LocalDateTime updatedAt;
 
+    private String traceId;
+
     @Builder.Default
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();

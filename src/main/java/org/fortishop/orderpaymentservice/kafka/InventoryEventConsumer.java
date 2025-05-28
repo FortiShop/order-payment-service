@@ -19,7 +19,7 @@ public class InventoryEventConsumer {
 
     @KafkaListener(topics = "inventory.reserved", groupId = "order-group", containerFactory = "kafkaListenerContainerFactory")
     public void handleReserved(InventoryReservedEvent event) {
-        log.info("재고 확보 성공: orderId = {}, 결제는 프론트에서 수동 요청 예정", event.getOrderId());
+        log.info("재고 확보 성공: orderId = {}, traceId={} 결제는 프론트에서 수동 요청 예정", event.getOrderId(), event.getTraceId());
     }
 
     @KafkaListener(
@@ -29,7 +29,8 @@ public class InventoryEventConsumer {
     )
     @Transactional
     public void handleFailed(InventoryFailedEvent event) {
-        log.warn("재고 확보 실패: orderId = {}, reason = {}", event.getOrderId(), event.getReason());
+        log.warn("재고 확보 실패: orderId = {}, traceId={}, reason = {}", event.getOrderId(), event.getTraceId(),
+                event.getReason());
 
         orderRepository.findById(event.getOrderId()).ifPresent(order -> {
             order.updateStatus(OrderStatus.FAILED);
