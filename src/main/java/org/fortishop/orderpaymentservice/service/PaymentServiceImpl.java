@@ -2,6 +2,7 @@ package org.fortishop.orderpaymentservice.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.fortishop.orderpaymentservice.domain.OrderStatus;
 import org.fortishop.orderpaymentservice.domain.Payment;
 import org.fortishop.orderpaymentservice.domain.PaymentStatus;
 import org.fortishop.orderpaymentservice.dto.event.DeliveryStartedEvent;
+import org.fortishop.orderpaymentservice.dto.event.OrderItemInfo;
 import org.fortishop.orderpaymentservice.dto.event.PaymentCompletedEvent;
 import org.fortishop.orderpaymentservice.dto.event.PaymentFailedEvent;
 import org.fortishop.orderpaymentservice.dto.event.PointChangedEvent;
@@ -85,10 +87,13 @@ public class PaymentServiceImpl implements PaymentService {
         } catch (Exception e) {
             log.error("결제 실패", e);
             order.updateStatus(OrderStatus.FAILED);
-
+            List<OrderItemInfo> itemInfos = order.getOrderItems().stream()
+                    .map(OrderItemInfo::of)
+                    .toList();
             paymentEventProducer.sendPaymentFailed(PaymentFailedEvent.builder()
                     .orderId(order.getId())
                     .reason("결제 시스템 오류")
+                    .items(itemInfos)
                     .timestamp(LocalDateTime.now().toString())
                     .traceId(traceId)
                     .build());

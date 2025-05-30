@@ -36,14 +36,4 @@ public class OrderCreatedEvent {
                         .toList())
                 .build();
     }
-
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class OrderItemInfo {
-        private Long productId;
-        private int quantity;
-        private BigDecimal price;
-    }
 }
