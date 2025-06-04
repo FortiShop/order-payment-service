@@ -7,6 +7,7 @@ import org.fortishop.orderpaymentservice.dto.event.InventoryFailedEvent;
 import org.fortishop.orderpaymentservice.dto.event.InventoryReservedEvent;
 import org.fortishop.orderpaymentservice.respository.OrderRepository;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ public class InventoryEventConsumer {
     @KafkaListener(topics = "inventory.reserved", groupId = "order-group", containerFactory = "kafkaListenerContainerFactory")
     public void handleReserved(InventoryReservedEvent event) {
         log.info("재고 확보 성공: orderId = {}, traceId={} 결제는 프론트에서 수동 요청 예정", event.getOrderId(), event.getTraceId());
+        // 결제 창으로 넘어가도록 하면 좋음. 실제 프론트에 재고 확보를 성공했다는 내용을 전달해야함.
     }
 
     @KafkaListener(
@@ -28,13 +30,18 @@ public class InventoryEventConsumer {
             containerFactory = "inventoryFailedKafkaListenerContainerFactory"
     )
     @Transactional
-    public void handleFailed(InventoryFailedEvent event) {
+    public void handleFailed(InventoryFailedEvent event, Acknowledgment ack) {
         log.warn("재고 확보 실패: orderId = {}, traceId={}, reason = {}", event.getOrderId(), event.getTraceId(),
                 event.getReason());
-
-        orderRepository.findById(event.getOrderId()).ifPresent(order -> {
-            order.updateStatus(OrderStatus.FAILED);
-            log.info("변경 후 상태: {}", order.getStatus());
-        });
+        try {
+            orderRepository.findById(event.getOrderId()).ifPresent(order -> {
+                order.updateStatus(OrderStatus.FAILED);
+                log.info("변경 후 상태: {}", order.getStatus());
+            });
+            ack.acknowledge();
+        } catch (Exception e) {
+            log.error("처리 중 예외 발생: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 }
