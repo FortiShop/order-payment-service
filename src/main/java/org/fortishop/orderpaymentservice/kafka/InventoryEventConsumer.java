@@ -44,4 +44,10 @@ public class InventoryEventConsumer {
             throw e;
         }
     }
+
+    @KafkaListener(topics = "inventory.failed.dlq", groupId = "order-dlq-group")
+    public void handleDlq(InventoryFailedEvent event) {
+        log.error("[DLQ 메시지 확인] inventory.failed 처리 실패 : {}", event);
+        // slack 또는 이메일로 개발자, 관리자에게 알림
+    }
 }
