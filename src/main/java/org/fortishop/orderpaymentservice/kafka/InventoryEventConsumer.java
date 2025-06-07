@@ -18,10 +18,20 @@ public class InventoryEventConsumer {
 
     private final OrderRepository orderRepository;
 
-    @KafkaListener(topics = "inventory.reserved", groupId = "order-group", containerFactory = "kafkaListenerContainerFactory")
-    public void handleReserved(InventoryReservedEvent event) {
+    @KafkaListener(
+            topics = "inventory.reserved",
+            groupId = "order-group",
+            containerFactory = "inventoryReservedKafkaListenerContainerFactory")
+    public void handleReserved(InventoryReservedEvent event, Acknowledgment ack) {
         log.info("재고 확보 성공: orderId = {}, traceId={} 결제는 프론트에서 수동 요청 예정", event.getOrderId(), event.getTraceId());
-        // 결제 창으로 넘어가도록 하면 좋음. 실제 프론트에 재고 확보를 성공했다는 내용을 전달해야함.
+        try {
+            log.info("재고 확보 성공 결제 부탁드립니다.");
+            ack.acknowledge();
+            // 결제 창으로 넘어가도록 하면 좋음. 실제 프론트에 재고 확보를 성공했다는 내용을 전달해야함.
+        } catch (Exception e) {
+            log.error("처리 중 예외 발생: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @KafkaListener(

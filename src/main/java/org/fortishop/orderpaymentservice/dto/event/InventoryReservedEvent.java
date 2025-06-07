@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class InventoryReservedEvent {
     private Long orderId;
+    private Long productId;
     private boolean reserved;
     private String timestamp;
     private String traceId;

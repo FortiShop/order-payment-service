@@ -9,6 +9,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.fortishop.orderpaymentservice.dto.event.InventoryFailedEvent;
+import org.fortishop.orderpaymentservice.dto.event.InventoryReservedEvent;
 import org.fortishop.orderpaymentservice.dto.event.OrderCreatedEvent;
 import org.fortishop.orderpaymentservice.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +32,41 @@ import org.springframework.util.backoff.FixedBackOff;
 public class KafkaConsumerConfig {
 
     private final KafkaProperties kafkaProperties;
+
+    @Bean
+    public ConsumerFactory<String, InventoryReservedEvent> inventoryReservedConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaProperties.getConsumer().getGroupId());
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, kafkaProperties.getConsumer().getAutoOffsetReset());
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+
+        JsonDeserializer<InventoryReservedEvent> deserializer = new JsonDeserializer<>(InventoryReservedEvent.class);
+        deserializer.addTrustedPackages("*");
+        deserializer.setRemoveTypeHeaders(false);
+        deserializer.setUseTypeMapperForKey(true);
+        deserializer.setUseTypeHeaders(false);
+
+        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
+    }
+
+    @Bean("inventoryReservedKafkaListenerContainerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, InventoryReservedEvent> inventoryReservedKafkaListenerContainerFactory(
+            KafkaTemplate<String, Object> kafkaTemplate) {
+
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, InventoryReservedEvent>();
+        factory.setConsumerFactory(inventoryReservedConsumerFactory());
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
+
+        DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(
+                kafkaTemplate,
+                (record, ex) -> new TopicPartition("inventory.reserved.dlq", record.partition())
+        );
+
+        factory.setCommonErrorHandler(new DefaultErrorHandler(recoverer, new FixedBackOff(1000L, 3)));
+
+        return factory;
+    }
 
     @Bean
     public ConsumerFactory<String, InventoryFailedEvent> inventoryFailedConsumerFactory() {
